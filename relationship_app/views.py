@@ -1,24 +1,32 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.generic import DetailView
-from .models import Book, Library
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
-# Homepage View
-def home(request):
-    return HttpResponse("<h1>Welcome to the Library</h1><p>Go to <a href='/books/'>Books</a> to see all books.</p>")
+# User Registration View
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Log in the user immediately after registration
+            return redirect('list_books')  # Redirect to book list after successful registration
+    else:
+        form = UserCreationForm()
+    return render(request, 'relationship_app/register.html', {'form': form})
 
-# Function-based view to list all books
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'list_books.html', {'books': books})  # Removed 'relationship_app/' prefix for template
+# User Login View
+def user_login(request):
+    if request.method == "POST":
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('list_books')  # Redirect to book list after login
+    else:
+        form = AuthenticationForm()
+    return render(request, 'relationship_app/login.html', {'form': form})
 
-# Class-based view to display library details
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = 'library_detail.html'  # Removed 'relationship_app/' prefix for template
-    context_object_name = 'library'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['books'] = self.object.books.all()  # Fetch all books in the library
-        return context
+# User Logout View
+def user_logout(request):
+    logout(request)
+    return render(request, 'relationship_app/logout.html')
