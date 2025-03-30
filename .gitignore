@@ -1,0 +1,11 @@
+# Ignore the virtual environment
+venv/
+
+# Ignore Django migrations and cache files
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# Ignore database files
+db.sqlite3
