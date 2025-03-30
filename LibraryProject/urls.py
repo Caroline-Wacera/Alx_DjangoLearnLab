@@ -1,12 +1,8 @@
-from django.contrib import admin
-from django.urls import path, include  # ✅ Import path and include
-from django.shortcuts import redirect
-
-def redirect_to_login(request):
-    return redirect('login')  # Redirects to the login page
+from django.urls import path
+from .views import add_book, edit_book, delete_book
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', redirect_to_login),  # Redirect root URL to login page
-    path('relationship/', include('relationship_app.urls')),
+    path('add-book/', add_book, name='add_book'),
+    path('edit-book/<int:book_id>/', edit_book, name='edit_book'),
+    path('delete-book/<int:book_id>/', delete_book, name='delete_book'),
 ]
