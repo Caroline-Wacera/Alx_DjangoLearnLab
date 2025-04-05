@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 
 class CustomUser(AbstractUser):
@@ -11,6 +13,33 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+
+class CustomUserAdmin(BaseUserAdmin):
+    model = CustomUser
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active')
+    fieldsets = (
+        (None, {'fields': ('username', 'email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'phone_number', 'address', 'date_of_birth', 'profile_photo')}),
+        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login',)}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide'),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
+    search_fields = ('email',)
+    ordering = ('email',)
+    filter_horizontal = ('groups', 'user_permissions')
+    list_per_page = 10
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('profile_photo')
+    
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
