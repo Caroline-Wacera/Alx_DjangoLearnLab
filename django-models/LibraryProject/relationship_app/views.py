@@ -2,21 +2,44 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import Book
 from .forms import BookForm  # Ensure you have a BookForm for adding/editing
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 
 
-# Create Login and Registration Views
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)  # Log in the user after registration
-            return redirect('home')  # Redirect to a home page or dashboard
+            login(request, user)
+            return redirect('home')
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
+
+
+@login_required
+def admin_view(request):
+    if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
+        return render(request, 'relationship_app/admin_view.html')
+    else:
+        return redirect('login')
+    
+@login_required
+def librarian_view(request):
+    if request.user.is_authenticated and request.user.userprofile.role == 'Librarian':
+        return render(request, 'relationship_app/librarian_view.html')
+    else:
+        return redirect('login')
+    
+@login_required
+def member_view(request):
+    if request.user.is_authenticated and request.user.userprofile.role == 'Member':
+        return render(request, 'relationship_app/member_view.html')
+    else:
+        return redirect('login')
+
 
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
