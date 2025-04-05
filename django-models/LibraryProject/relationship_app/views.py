@@ -5,7 +5,12 @@ from .forms import BookForm  # Ensure you have a BookForm for adding/editing
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import permission_required
 
+# permission_required decorator checks if the user has the required permission
+# before allowing access to the view. If not, it raises a PermissionDenied exception.
+# Where to use it:
+# Use it on views where you want to restrict access based on permissions.
 
 def register(request):
     if request.method == 'POST':
@@ -20,6 +25,7 @@ def register(request):
 
 
 @login_required
+@permission_required('relationship_app.can_view_admin', raise_exception=True)
 @user_passes_test(lambda u: u.userprofile.role == 'Admin', login_url='login')
 def admin_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
@@ -28,6 +34,7 @@ def admin_view(request):
         return redirect('login')
     
 @login_required
+@permission_required('relationship_app.can_view_librarian', raise_exception=True)
 @user_passes_test(lambda u: u.userprofile.role == 'Librarian', login_url='login')
 def librarian_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Librarian':
@@ -36,6 +43,7 @@ def librarian_view(request):
         return redirect('login')
     
 @login_required
+@permission_required('relationship_app.can_view_member', raise_exception=True)
 @user_passes_test(lambda u: u.userprofile.role == 'Member', login_url='login')
 def member_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Member':
