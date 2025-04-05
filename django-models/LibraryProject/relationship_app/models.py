@@ -1,5 +1,15 @@
 from django.db import models
 
+class UserProfile(models.Model):
+    user = models.OneToOneField('auth.User', on_delete=models.CASCADE)
+    role = models.CharField(max_length=50, choices=[
+        ("Admin", "Admin"),
+        ("Librarian", "Librarian"),
+        ("Member", "Member"),
+    ])
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
+    
+    
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.CharField(max_length=255)
