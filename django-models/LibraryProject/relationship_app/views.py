@@ -5,6 +5,19 @@ from .forms import BookForm  # Ensure you have a BookForm for adding/editing
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
 
+
+# Create Login and Registration Views
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)  # Log in the user after registration
+            return redirect('home')  # Redirect to a home page or dashboard
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
 def add_book(request):
