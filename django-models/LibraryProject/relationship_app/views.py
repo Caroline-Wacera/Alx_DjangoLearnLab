@@ -20,6 +20,7 @@ def register(request):
 
 
 @login_required
+@user_passes_test(lambda u: u.userprofile.role == 'Admin', login_url='login')
 def admin_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Admin':
         return render(request, 'relationship_app/admin_view.html')
@@ -27,6 +28,7 @@ def admin_view(request):
         return redirect('login')
     
 @login_required
+@user_passes_test(lambda u: u.userprofile.role == 'Librarian', login_url='login')
 def librarian_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Librarian':
         return render(request, 'relationship_app/librarian_view.html')
@@ -34,6 +36,7 @@ def librarian_view(request):
         return redirect('login')
     
 @login_required
+@user_passes_test(lambda u: u.userprofile.role == 'Member', login_url='login')
 def member_view(request):
     if request.user.is_authenticated and request.user.userprofile.role == 'Member':
         return render(request, 'relationship_app/member_view.html')
