@@ -16,7 +16,7 @@ def register(request):
             return redirect('home')  # Redirect to a home page or dashboard
     else:
         form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
+    return render(request, 'relationship_app/register.html', {'form': form})
 
 @login_required
 @permission_required('relationship_app.can_add_book', raise_exception=True)
